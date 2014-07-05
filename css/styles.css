@@ -1,0 +1,14 @@
+.input{
+  width: 30px;
+  height: 30px;
+  margin-top: 5px;
+  text-align: center;
+  cursor: pointer;
+  outline: 0;
+}
+
+#gridImg{
+  margin-top: -2px;
+  margin-left: 120px;
+  position: fixed;
+}
