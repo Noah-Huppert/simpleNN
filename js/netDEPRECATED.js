@@ -84,3 +84,157 @@ net.process = function(){
   }
 
 };
+
+
+
+/* ----------------------- V2 ---------------------------- */
+function neuron(inputSource, weight){
+  var self = this;
+
+  /* Check for input existance */
+  if(inputSource == undefined){
+    throw Error('\'inputSource\' not defined, terminating');
+    return;
+  }
+
+  if(weight == undefined){
+    throw Error('\'weight\' not defined, terminating');
+    return;
+  }
+
+  self.inputSource = inputSource;//Set Value at bottom
+  self.value = 0;
+
+  self.test = {};
+  self.weight = typeof weight === 'boolean' && weight ? Math.random() / 100 : weight;
+
+  /* Getters */
+  self.getInputSource = function(){
+    return self.inputSource;
+  };
+
+  self.getValue = function(){
+    return self.value;
+  };
+
+  self.getWeight = function(){
+    return self.weight;
+  };
+
+
+  /* Setters */
+  self.setInputSource = function(sInputSource){
+    self.inputSource = sInputSource;
+    self.updateValue();
+  };
+
+  self.setValue = function(sValue){
+    self.value = sValue;
+  };
+
+  self.setWeight = function(sWeight){
+    self.weight = sWeight;
+  };
+
+
+  /* Actions */
+  self.updateValue = function(){
+    self.value = parseInt($(self.inputSource).val());
+  };
+
+  self.numRev = function(num){//Reverse numbers, does !true but with 1 and 0
+    return num === 0 ? 1 : 0;
+  };
+
+  self.check = function(){
+    var output = self.getValue() * self.getWeight();
+
+    return output;
+  };
+
+
+  /* After Def Actions */
+  self.updateValue();
+}
+
+function network(threshold, neurons){
+  var self = this;
+
+  /* Check for input existance */
+  if(threshold === undefined){
+    throw Error('\'threshold\' not defined, terminating');
+    return;
+  }
+
+  self.threshold = threshold;
+  self.neurons = !!neurons ? neurons : [];
+
+
+  /* Getters */
+  self.getNeurons = function(){
+    return self.neurons;
+  };
+
+  self.getThreshold = function(){
+    return self.threshold;
+  };
+
+
+  /* Setters */
+  self.setNeurons = function(sNeurons){
+    self.neurons = sNeurons;
+  };
+
+  self.addNeuron = function(aNeuron){
+    self.neurons.push(aNeuron);
+  };
+
+  self.setThreshold = function(sThreshold){
+    self.threshold = sThreshold;
+  };
+
+
+  /* Actions */
+  self.createNeuron = function(inputSource, weight){
+    var neuron = new neuron(inputSource, weight);
+
+    self.addNeuron(neuron);
+  };
+
+  self.check = function(returnComplex){//returnComplex => gives more information about the decision
+    returnComplex = returnComplex !== undefined ? returnComplex : false;
+
+    var result = 0.0;
+    var state = 0;
+
+    var i = 0;
+    while(i <= self.getNeurons().length - 1){
+      result =+ self.getNeurons()[i].check();
+
+      i++;
+    }
+
+    if(result >= threshold){
+      state = 1;
+    }
+
+    if(returnComplex){
+      return {
+        "result": result,
+        "state": state
+      };
+    } else{
+      return state;
+    }
+  };
+}
+
+run = function(){
+  var net = new network(0.5);
+
+  var n1 = new neuron('#i1', true);
+
+  net.addNeuron(n1);
+
+  console.log(net.check(true));
+};
