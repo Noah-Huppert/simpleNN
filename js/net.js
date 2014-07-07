@@ -1,9 +1,14 @@
-function neuron(inputSource, testCase, testOutput){
+function neuron(inputSource, weight, testCase, testOutput){
   var self = this;
 
   /* Check for input existance */
   if(inputSource == undefined){
     throw Error('\'inputSource\' not defined, terminating');
+    return;
+  }
+
+  if(weight == undefined){
+    throw Error('\'weight\' not defined, terminating');
     return;
   }
 
@@ -21,6 +26,7 @@ function neuron(inputSource, testCase, testOutput){
   self.value = 0;
 
   self.test = {};
+  self.weight = typeof weight === 'boolean' && weight ? Math.random() : weight;
   self.test.case = testCase;
   self.test.output = testOutput;
 
@@ -32,6 +38,10 @@ function neuron(inputSource, testCase, testOutput){
 
   self.getValue = function(){
     return self.value;
+  };
+
+  self.getWeight = function(){
+    return self.weight;
   };
 
   self.getTest = function(){
@@ -55,6 +65,10 @@ function neuron(inputSource, testCase, testOutput){
 
   self.setValue = function(sValue){
     self.value = sValue;
+  };
+
+  self.setWeight = function(sWeight){
+    self.weight = sWeight;
   };
 
   self.setTest = function(sTest){
@@ -81,6 +95,9 @@ function neuron(inputSource, testCase, testOutput){
 
   self.check = function(){
     var output = self.getValue() === self.getTestCase() ? self.getTestOutput() : self.numRev(self.getTestOutput());
+
+    output = output * self.getWeight();
+
     return output;
   };
 
@@ -128,8 +145,8 @@ function network(threshold, neurons){
 
 
   /* Actions */
-  self.createNeuron = function(inputSource, testCase, testOutput){
-    var neuron = new neuron(inputSource, testCase, testOutput);
+  self.createNeuron = function(inputSource, weight, testCase, testOutput){
+    var neuron = new neuron(inputSource, weight, testCase, testOutput);
 
     self.addNeuron(neuron);
   };
@@ -139,13 +156,10 @@ function network(threshold, neurons){
 
     var result = 0.0;
     var state = 0;
-    var weight = 1 / self.getNeurons().length;
 
     var i = 0;
     while(i <= self.getNeurons().length - 1){
-      if(self.getNeurons()[i].check() === 1){
-        result += weight;
-      }
+      result =+ self.getNeurons()[i].check();
 
       i++;
     }
@@ -157,8 +171,7 @@ function network(threshold, neurons){
     if(returnComplex){
       return {
         "result": result,
-        "state": state,
-        "weight": weight
+        "state": state
       };
     } else{
       return state;
@@ -167,9 +180,8 @@ function network(threshold, neurons){
 }
 
 run = function(){
-  var n1 = new neuron('#i1', 0, 1);
-  var n2 = new neuron('#i2', 0, 1);
-  var n3 = new neuron('#i3', 0, 1);
-  var net = new network(0.5, [n1, n2, n3]);
+  var net = new network(0.5);
+
+  //var n1 = new neuron('#i1', true, )
   console.log(net.check(true));
 };

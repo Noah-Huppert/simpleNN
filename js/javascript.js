@@ -12,9 +12,7 @@ $(document).ready(function(){
       });
     }
   }
-
-
-
+  
   $('.input').change(function(){
     handleInputColor(this);
   });
